@@ -13,7 +13,7 @@ RUN apk -U upgrade && \
     adduser -S -s /bin/bash -u 2000 -D -g 2000 cowrie && \
 
 # Install cowrie from git
-    git clone https://github.com/micheloosterhof/cowrie.git /home/cowrie/cowrie/ && \
+    git clone https://github.com/Loanbo/cowrie.git /home/cowrie/cowrie/ && \
     cd /home/cowrie/cowrie && \
     pip install --no-cache-dir --upgrade cffi && \
     pip install --no-cache-dir -U -r requirements.txt && \
