@@ -1,16 +1,10 @@
-FROM ubuntu:16.04
+FROM debian:stretch-slim
+MAINTAINER MO
 ENV DEBIAN_FRONTEND noninteractive
-
 
 # Include dist
 ADD dist/ /root/dist/
 
-# Speedup
-RUN echo 'force-unsafe-io' | tee /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
-    echo 'DPkg::Post-Invoke {"/bin/rm -f /var/cache/apt/archives/*.deb || true";};' | tee /etc/apt/apt.conf.d/no-cache && \
-    echo 'Acquire::http {No-Cache=True;};' | tee /etc/apt/apt.conf.d/no-http-cache
-    
-    
 # Install dependencies and packages
 RUN apt-get update -y && \
     apt-get upgrade -y && \
@@ -40,7 +34,7 @@ RUN apt-get update -y && \
       python3-yaml && \
 
 # Get and install dionaea
-    git clone https://github.com/Loanbo/dionaea /root/dionaea/ && \
+    git clone https://github.com/dinotools/dionaea /root/dionaea/ && \
     cd /root/dionaea && \
 #    git checkout 99e9cfc88cfa8f3715813b18ec7006bca2622d76 && \
     autoreconf -vi && \
