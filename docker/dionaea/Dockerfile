@@ -34,20 +34,9 @@ RUN apt-get update -y && \
 # Get and install dionaea
     git clone https://github.com/dinotools/dionaea /root/dionaea/ && \
     cd /root/dionaea && \
-#    git checkout 99e9cfc88cfa8f3715813b18ec7006bca2622d76 && \
-    autoreconf -vi && \
-    ./configure \
-      --prefix=/opt/dionaea \
-      --with-python=/usr/bin/python3 \
-      --with-cython-dir=/usr/bin \
-      --enable-ev \
-      --with-ev-include=/usr/include \
-      --with-ev-lib=/usr/lib \
-      --with-emu-lib=/usr/lib/libemu \
-      --with-emu-include=/usr/include \
-      --with-nl-include=/usr/include/libnl3 \
-      --with-nl-lib=/usr/lib \
-      --enable-static && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/dionaea .. && \
     make && \
     make install && \
 
