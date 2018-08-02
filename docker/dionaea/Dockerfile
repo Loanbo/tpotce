@@ -5,41 +5,43 @@ ADD dist/ /root/dist/
 
 # Install dependencies and packages
 RUN apt-get update -y && \
-    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
     apt-get install -y --no-install-recommends \
-      autoconf \
-      automake \
-      build-essential \
-      ca-certificates \
-      check \
-      cython3 \
-      git \
-      libcurl4-openssl-dev \
-      libemu-dev \
-      libev-dev \
-      libglib2.0-dev \
-      libloudmouth1-dev \
-      libnetfilter-queue-dev \
-      libnl-3-dev \
-      libpcap-dev \
-      libssl-dev \
-      libtool \
-      libudns-dev \
-      procps \
-      python3 \
-      python3-dev \
-      python3-bson \
-      python3-yaml && \
+	build-essential \
+	ca-certificates \
+	check \
+	cmake \
+	cython3 \
+	git \
+    libcap2-bin \
+	libcurl4-openssl-dev \
+	libemu-dev \
+	libev-dev \
+	libglib2.0-dev \
+	libloudmouth1-dev \
+	libnetfilter-queue-dev \
+	libnl-3-dev \
+	libpcap-dev \
+	libssl-dev \
+	libtool \
+	libudns-dev \
+	procps \
+	python3 \
+	python3-dev \
+	python3-bson \
+	python3-yaml \
+	ttf-liberation && \
+
 
 # Get and install dionaea
-    git clone https://github.com/dinotools/dionaea /root/dionaea/ && \
+    git clone --depth=1 https://github.com/dinotools/dionaea -b 0.8.0 /root/dionaea/ && \
     cd /root/dionaea && \
     mkdir build && \
     cd build && \
     cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/dionaea .. && \
     make && \
     make install && \
-
+    
 # Setup user and groups
     addgroup --gid 2000 dionaea && \
     adduser --system --no-create-home --shell /bin/bash --uid 2000 --disabled-password --disabled-login --gid 2000 dionaea && \
@@ -55,11 +57,10 @@ RUN apt-get update -y && \
 
 # Setup runtime and clean up
     apt-get purge -y \
-      autoconf \
-      automake \
       build-essential \
       ca-certificates \
       check \
+      cmake \
       cython3 \
       git \
       libcurl4-openssl-dev \
@@ -76,7 +77,7 @@ RUN apt-get update -y && \
       python3 \
       python3-dev \   
       python3-bson \
-      python3-yaml && \
+      python3-yaml && \ 
 
     apt-get install -y \
       ca-certificates \
@@ -96,6 +97,7 @@ RUN apt-get update -y && \
     apt-get autoremove --purge -y && \
     apt-get clean && \
     rm -rf /root/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # Start dionaea
 CMD ["/opt/dionaea/bin/dionaea", "-u", "dionaea", "-g", "dionaea", "-c", "/opt/dionaea/etc/dionaea/dionaea.cfg"]
