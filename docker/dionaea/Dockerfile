@@ -1,10 +1,16 @@
-FROM debian:stretch-slim
-MAINTAINER MO
+FROM ubuntu:16.04
 ENV DEBIAN_FRONTEND noninteractive
+
 
 # Include dist
 ADD dist/ /root/dist/
 
+# Speedup
+RUN echo 'force-unsafe-io' | tee /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
+    echo 'DPkg::Post-Invoke {"/bin/rm -f /var/cache/apt/archives/*.deb || true";};' | tee /etc/apt/apt.conf.d/no-cache && \
+    echo 'Acquire::http {No-Cache=True;};' | tee /etc/apt/apt.conf.d/no-http-cache
+    
+    
 # Install dependencies and packages
 RUN apt-get update -y && \
     apt-get upgrade -y && \
