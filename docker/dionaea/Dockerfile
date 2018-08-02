@@ -52,7 +52,7 @@ RUN apt-get update -y && \
     rm -rf /opt/dionaea/etc/dionaea/* && \
     mv /root/dist/etc/* /opt/dionaea/etc/dionaea/ && \
     mv /root/dist/log_incident.py /opt/dionaea/lib/dionaea/python/dionaea/log_incident.py && \
-    mv /root/disk/log_json.py /opt/dionaea/lib/dionaea/python/dionaea/log_json.py && \
+    mv /root/dist/log_json.py /opt/dionaea/lib/dionaea/python/dionaea/log_json.py && \
 
 
 # Setup runtime and clean up
