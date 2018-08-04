@@ -1,4 +1,5 @@
-FROM ubuntu:16.04
+FROM debian:stretch-slim
+ENV DEBIAN_FRONTEND noninteractive
 
 # Include dist
 ADD dist/ /root/dist/
