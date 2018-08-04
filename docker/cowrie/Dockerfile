@@ -1,5 +1,5 @@
-FROM alpine
-MAINTAINER MO
+FROM debian:stretch-slim
+ENV DEBIAN_FRONTEND noninteractive
 
 # Include dist
 ADD dist/ /root/dist/
