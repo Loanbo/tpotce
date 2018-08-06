@@ -1,8 +1,5 @@
 FROM debian:stretch-slim as builder
 MAINTAINER Michel Oosterhof <michel@oosterhof.net>
-# Include dist
-ADD dist/ /root/dist/
-
 RUN groupadd -r -g 1000 cowrie && \
     useradd -r -u 1000 -d /cowrie -m -g cowrie cowrie
 
@@ -23,21 +20,22 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
       python3-virtualenv
 
 # Build a cowrie environment from github master HEAD.
-    git clone http://github.com/micheloosterhof/cowrie /home/cowrie/cowrie/ && \
-    cd /home/cowrie/cowrie/ && \
-      virtualenv -p python3 cowrie-env && \
-      . cowrie-env/bin/activate && \
-      pip install --upgrade pip && \
-      pip install --upgrade cffi && \
-      pip install --upgrade setuptools && \
-      pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
+RUN su - cowrie -c "\
+      git clone http://github.com/micheloosterhof/cowrie /cowrie/cowrie-git && \
+      cd /cowrie && \
+        virtualenv -p python3 cowrie-env && \
+        . cowrie-env/bin/activate && \
+        pip install --upgrade pip && \
+        pip install --upgrade cffi && \
+        pip install --upgrade setuptools && \
+        pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
 
 FROM debian:stretch-slim
 MAINTAINER Michel Oosterhof <michel@oosterhof.net>
 RUN groupadd -r -g 1000 cowrie && \
-    cp /root/dist/cowrie.cfg /home/cowrie/cowrie/cowrie.cfg && \
-    cp /root/dist/userdb.txt /home/cowrie/cowrie/data/userdb.txt && \
-    useradd -r -u 1000 -d /home/cowrie -m -g cowrie cowrie
+    cp /root/dist/cowrie.cfg /cowrie/cowrie.cfg && \
+    cp /root/dist/userdb.txt /cowrie/data/userdb.txt && \
+    useradd -r -u 1000 -d /cowrie -m -g cowrie cowrie
 
 RUN export DEBIAN_FRONTEND=noninteractive; \
     apt-get update && \
@@ -48,9 +46,9 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
       libffi6 \
       python3
 
-COPY --chown=cowrie:cowrie --from=builder /home/cowrie /home/cowrie
+COPY --chown=cowrie:cowrie --from=builder /cowrie /cowrie
 
 USER cowrie
-WORKDIR /home/cowrie/cowrie
-CMD [ "/home/cowrie/cowrie/bin/cowrie", "start", "-n" ]
+WORKDIR /cowrie/cowrie-git
+CMD [ "/cowrie/cowrie-git/bin/cowrie", "start", "-n" ]
 EXPOSE 2222 2223
