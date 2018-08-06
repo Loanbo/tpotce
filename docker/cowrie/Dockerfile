@@ -1,64 +1,57 @@
-FROM alpine
-
+FROM debian:stretch-slim as builder
+MAINTAINER Michel Oosterhof <michel@oosterhof.net>
 # Include dist
 ADD dist/ /root/dist/
 
-# Get and install dependencies & packages
-RUN apk -U --no-cache add \
-                       build-base \
-                       git \
-                       gmp-dev \
-                       libcap \
-                       libffi-dev \
-                       mpc1-dev \
-                       mpfr-dev \
-                       openssl-dev \
-                       python \
-                       python-dev \
-                       py-mysqldb \
-                       py-pip \
-                       py-requests \
-                       py-setuptools && \
+RUN groupadd -r -g 1000 cowrie && \
+    useradd -r -u 1000 -d /cowrie -m -g cowrie cowrie
 
-# Setup user
-    addgroup -g 2000 cowrie && \
-    adduser -S -s /bin/ash -u 2000 -D -g 2000 cowrie && \
+# Set up Debian prereqs
+RUN export DEBIAN_FRONTEND=noninteractive; \
+    apt-get update && \
+    apt-get install -y \
+        -o APT::Install-Suggests=false \
+        -o APT::Install-Recommends=false \
+      python3-pip \
+      libssl-dev \
+      libffi-dev \
+      build-essential \
+      python3-dev \
+      python3 \
+      git \
+      virtualenv \
+      python3-virtualenv
 
-# Install cowrie from git
-    git clone --depth=1 https://github.com/micheloosterhof/cowrie /home/cowrie/cowrie/ && \
-    cd /home/cowrie/cowrie && \
-    pip install --no-cache-dir --upgrade cffi pip && \
-    pip install --no-cache-dir --upgrade -r requirements.txt && \
+# Build a cowrie environment from github master HEAD.
+RUN su - cowrie -c "\
+      git clone http://github.com/micheloosterhof/cowrie /home/cowrie/cowrie/ && \
+      cd /home/cowrie/cowrie/ && \
+        virtualenv -p python3 cowrie-env && \
+        . cowrie-env/bin/activate && \
+        pip install --upgrade pip && \
+        pip install --upgrade cffi && \
+        pip install --upgrade setuptools && \
+        pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
 
-# Setup configs
-    setcap cap_net_bind_service=+ep /usr/bin/python2.7 && \
+FROM debian:stretch-slim
+MAINTAINER Michel Oosterhof <michel@oosterhof.net>
+RUN groupadd -r -g 1000 cowrie && \
     cp /root/dist/cowrie.cfg /home/cowrie/cowrie/cowrie.cfg && \
     cp /root/dist/userdb.txt /home/cowrie/cowrie/data/userdb.txt && \
-    chown cowrie:cowrie -R /home/cowrie/* /usr/lib/python2.7/site-packages/twisted/plugins && \
+    useradd -r -u 1000 -d /home/cowrie -m -g cowrie cowrie
 
-# Start Cowrie once to prevent dropin.cache errors upon container start caused by read-only filesystem
-    su - cowrie -c "export PYTHONPATH=/home/cowrie/cowrie && \
-                   cd /home/cowrie/cowrie && \
-                   /usr/bin/twistd --uid=2000 --gid=2000 -y cowrie.tac --pidfile cowrie.pid cowrie &" && \
-    sleep 10 && \
+RUN export DEBIAN_FRONTEND=noninteractive; \
+    apt-get update && \
+    apt-get install -y \
+        -o APT::Install-Suggests=false \
+        -o APT::Install-Recommends=false \
+      libssl1.1 \
+      libffi6 \
+      python3
 
-# Clean up
-    apk del --purge build-base \
-                    git \
-                    gmp-dev \
-                    libcap \
-                    libffi-dev \
-                    mpc1-dev \
-                    mpfr-dev \
-                    python-dev \
-                    py-mysqldb \
-                    py-pip && \
-    rm -rf /root/* && \
-    rm -rf /var/cache/apk/* && \
-    rm -rf /home/cowrie/cowrie/cowrie.pid
+COPY --chown=cowrie:cowrie --from=builder /home/cowrie /home/cowrie
 
-# Start cowrie
-ENV PYTHONPATH /home/cowrie/cowrie
+USER cowrie
 WORKDIR /home/cowrie/cowrie
-USER cowrie:cowrie
-CMD ["/usr/bin/twistd", "--nodaemon", "-y", "cowrie.tac", "--pidfile", "/tmp/cowrie/cowrie.pid", "cowrie"]
+CMD [ "/home/cowrie/cowrie/bin/cowrie", "start", "-n" ]
+EXPOSE 2222 2223
