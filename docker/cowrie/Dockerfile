@@ -23,15 +23,14 @@ RUN export DEBIAN_FRONTEND=noninteractive; \
       python3-virtualenv
 
 # Build a cowrie environment from github master HEAD.
-RUN su - cowrie -c "\
-      git clone http://github.com/micheloosterhof/cowrie /home/cowrie/cowrie/ && \
-      cd /home/cowrie/cowrie/ && \
-        virtualenv -p python3 cowrie-env && \
-        . cowrie-env/bin/activate && \
-        pip install --upgrade pip && \
-        pip install --upgrade cffi && \
-        pip install --upgrade setuptools && \
-        pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
+    git clone http://github.com/micheloosterhof/cowrie /home/cowrie/cowrie/ && \
+    cd /home/cowrie/cowrie/ && \
+      virtualenv -p python3 cowrie-env && \
+      . cowrie-env/bin/activate && \
+      pip install --upgrade pip && \
+      pip install --upgrade cffi && \
+      pip install --upgrade setuptools && \
+      pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
 
 FROM debian:stretch-slim
 MAINTAINER Michel Oosterhof <michel@oosterhof.net>
