@@ -38,8 +38,8 @@ MAINTAINER Michel Oosterhof <michel@oosterhof.net>
 RUN groupadd -r -g 1000 cowrie && \
     cp /root/dist/cowrie.cfg /cowrie/cowrie-git/etc/cowrie.cfg && \
     cp /root/dist/userdb.txt /cowrie/cowrie-git/cowrie/data/userdb.txt && \
-    cp /root/dist/base.py /cowre/cowrie-git/src/cowrie/commands/base.py
-    cp /root/dist/output.py /cowre/cowrie-git/src/cowrie/core/output.py
+    cp /root/dist/base.py /cowre/cowrie-git/src/cowrie/commands/base.py && \
+    cp /root/dist/output.py /cowre/cowrie-git/src/cowrie/core/output.py && \
     useradd -r -u 1000 -d /cowrie -m -g cowrie cowrie
 
 RUN export DEBIAN_FRONTEND=noninteractive; \
