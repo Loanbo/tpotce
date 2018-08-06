@@ -14,7 +14,7 @@ RUN apt-get update -y && \
 	cmake \
 	cython3 \
 	git \
-    libcap2-bin \
+    	libcap2-bin \
 	libcurl4-openssl-dev \
 	libemu-dev \
 	libev-dev \
@@ -101,4 +101,5 @@ RUN apt-get update -y && \
 
 
 # Start dionaea
+USER dionaea:dionaea
 CMD ["/opt/dionaea/bin/dionaea", "-u", "dionaea", "-g", "dionaea", "-c", "/opt/dionaea/etc/dionaea/dionaea.cfg"]
