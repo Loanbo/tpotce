@@ -14,7 +14,7 @@ RUN apt-get update -y && \
 	cmake \
 	cython3 \
 	git \
-    	libcap2-bin \
+        libcap2-bin \
 	libcurl4-openssl-dev \
 	libemu-dev \
 	libev-dev \
@@ -33,7 +33,6 @@ RUN apt-get update -y && \
 	python3-yaml \
 	ttf-liberation && \
 
-
 # Get and install dionaea
     git clone --depth=1 https://github.com/dinotools/dionaea -b 0.8.0 /root/dionaea/ && \
     cd /root/dionaea && \
@@ -42,11 +41,11 @@ RUN apt-get update -y && \
     cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/dionaea .. && \
     make && \
     make install && \
-    
+
 # Setup user and groups
     addgroup --gid 2000 dionaea && \
     adduser --system --no-create-home --shell /bin/bash --uid 2000 --disabled-password --disabled-login --gid 2000 dionaea && \
-
+    setcap cap_net_bind_service=+ep /opt/dionaea/bin/dionaea && \
 
 # Supply configs and set permissions
     chown -R dionaea:dionaea /opt/dionaea/var && \
@@ -54,7 +53,6 @@ RUN apt-get update -y && \
     mv /root/dist/etc/* /opt/dionaea/etc/dionaea/ && \
     mv /root/dist/log_incident.py /opt/dionaea/lib/dionaea/python/dionaea/log_incident.py && \
     mv /root/dist/log_json.py /opt/dionaea/lib/dionaea/python/dionaea/log_json.py && \
-
 
 # Setup runtime and clean up
     apt-get purge -y \
@@ -98,7 +96,6 @@ RUN apt-get update -y && \
     apt-get autoremove --purge -y && \
     apt-get clean && \
     rm -rf /root/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 
 # Start dionaea
 USER dionaea:dionaea
