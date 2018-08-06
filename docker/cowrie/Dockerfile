@@ -35,6 +35,9 @@ RUN su - cowrie -c "\
 
 FROM debian:stretch-slim
 MAINTAINER Michel Oosterhof <michel@oosterhof.net>
+# Include dist
+ADD dist/ /root/dist/
+
 RUN groupadd -r -g 1000 cowrie && \
     cp /root/dist/cowrie.cfg /cowrie/cowrie-git/etc/cowrie.cfg && \
     cp /root/dist/userdb.txt /cowrie/cowrie-git/cowrie/data/userdb.txt && \
