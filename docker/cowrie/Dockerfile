@@ -34,8 +34,8 @@ RUN su - cowrie -c "\
         pip install --upgrade -r /cowrie/cowrie-git/requirements.txt"
 
 #chage cfg
-RUN cp /root/dist/cowrie.cfg /cowrie/cowrie-git/etc/cowrie.cfg.dist && \
-    cp /root/dist/userdb.txt /cowrie/cowrie-git/cowrie/data/userdb.txt && \
+RUN cp /root/dist/cowrie.cfg /cowrie/cowrie-git/cowrie.cfg && \
+    cp /root/dist/userdb.txt /cowrie/cowrie-git/data/userdb.txt && \
     cp /root/dist/base.py /cowre/cowrie-git/src/cowrie/commands/base.py && \
     cp /root/dist/output.py /cowre/cowrie-git/src/cowrie/core/output.py && \
 
