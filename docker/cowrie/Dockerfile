@@ -37,7 +37,7 @@ RUN su - cowrie -c "\
 RUN cp /root/dist/cowrie.cfg /cowrie/cowrie-git/cowrie.cfg && \
     cp /root/dist/userdb.txt /cowrie/cowrie-git/data/userdb.txt && \
     cp /root/dist/base.py /cowrie/cowrie-git/src/cowrie/commands/base.py && \
-    cp /root/dist/output.py /cowrie/cowrie-git/src/cowrie/core/output.py && \
+    cp /root/dist/output.py /cowrie/cowrie-git/src/cowrie/core/output.py 
 
 FROM debian:stretch-slim
 MAINTAINER Michel Oosterhof <michel@oosterhof.net>
