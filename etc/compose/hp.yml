@@ -6,11 +6,12 @@ networks:
   cowrie_local:
   dionaea_local:
   elasticpot_local:
-  ewsposter_local:
   glastopf_local:
   mailoney_local:
   rdpy_local:
   vnclowpot_local:
+  conpot_local:
+  emobility_local:
 
 services:
 
@@ -25,13 +26,14 @@ services:
     ports:
      - "22:2222"
      - "23:2223"
-    image: "dtagdevsec/cowrie:1710"
+    image: "loanbo/cowrie"
     volumes:
      - /data/cowrie/downloads:/home/cowrie/cowrie/dl
      - /data/cowrie/keys:/home/cowrie/cowrie/etc
      - /data/cowrie/log:/home/cowrie/cowrie/log
      - /data/cowrie/log/tty:/home/cowrie/cowrie/log/tty
-
+     - /etc/localtime:/etc/localtime
+     
 # Dionaea service
   dionaea:
     container_name: dionaea
@@ -58,7 +60,7 @@ services:
      - "5060:5060/udp"
      - "5061:5061"
      - "27017:27017"
-    image: "dtagdevsec/dionaea:1710"
+    image: "loanbo/dionaea"
     volumes:
      - /data/dionaea/roots/ftp:/opt/dionaea/var/dionaea/roots/ftp
      - /data/dionaea/roots/tftp:/opt/dionaea/var/dionaea/roots/tftp
@@ -68,6 +70,7 @@ services:
      - /data/dionaea/binaries:/opt/dionaea/var/dionaea/binaries
      - /data/dionaea/log:/opt/dionaea/var/log
      - /data/dionaea/rtp:/opt/dionaea/var/dionaea/rtp
+     - /etc/localtime:/etc/localtime
 
 # Elasticpot service
   elasticpot:
@@ -80,19 +83,8 @@ services:
     image: "dtagdevsec/elasticpot:1710"
     volumes:
      - /data/elasticpot/log:/opt/ElasticpotPY/log
+     - /etc/localtime:/etc/localtime
 
-# Ewsposter service
-  ewsposter:
-    container_name: ewsposter
-    restart: always
-    networks:
-     - ewsposter_local
-    env_file:
-     - /opt/tpot/etc/compose/elk_environment
-    image: "dtagdevsec/ewsposter:1710"
-    volumes:
-     - /data:/data
-     - /data/ews/conf/ews.ip:/opt/ewsposter/ews.ip
 
 # Glastopf service
   glastopf:
@@ -106,6 +98,7 @@ services:
     volumes:
      - /data/glastopf/db:/opt/glastopf/db
      - /data/glastopf/log:/opt/glastopf/log
+     - /etc/localtime:/etc/localtime
 
 # Honeytrap service
   honeytrap:
@@ -119,6 +112,7 @@ services:
      - /data/honeytrap/attacks:/opt/honeytrap/var/attacks
      - /data/honeytrap/downloads:/opt/honeytrap/var/downloads
      - /data/honeytrap/log:/opt/honeytrap/var/log
+     - /etc/localtime:/etc/localtime
 
 # Mailoney service
   mailoney:
@@ -131,6 +125,7 @@ services:
     image: "dtagdevsec/mailoney:1710"
     volumes:
      - /data/mailoney/log:/opt/mailoney/logs
+     - /etc/localtime:/etc/localtime
 
 # Rdpy service
   rdpy:
@@ -143,6 +138,7 @@ services:
     image: "dtagdevsec/rdpy:1710"
     volumes:
      - /data/rdpy/log:/var/log/rdpy
+     - /etc/localtime:/etc/localtime
 
 # Vnclowpot service
   vnclowpot:
@@ -155,3 +151,50 @@ services:
     image: "dtagdevsec/vnclowpot:1710"
     volumes:
      - /data/vnclowpot/log:/var/log/vnclowpot
+     - /etc/localtime:/etc/localtime
+ 
+ # Conpot service
+  conpot:
+    container_name: conpot
+    restart: always
+    networks:
+     - conpot_local
+    ports:
+     - "1025:1025"
+     - "50100:50100"
+    image: "dtagdevsec/conpot:1710"
+    volumes:
+     - /data/conpot/log:/var/log/conpot
+  
+ # Emobility service
+  emobility:
+    container_name: emobility
+    restart: always
+    networks:
+     - emobility_local
+    cap_add:
+     - NET_ADMIN
+    ports:
+     - "8080:8080"
+    image: "dtagdevsec/emobility:1710"
+    volumes:
+     - /data/emobility:/data/eMobility
+     - /data/ews:/data/ews
+
+# Netdata service
+  netdata:
+    container_name: netdata
+    restart: always
+    network_mode: "host"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    cap_add:
+     - SYS_PTRACE
+    security_opt:
+     - apparmor=unconfined
+    image: "loanbo/netdata"
+    volumes:
+     - /proc:/host/proc:ro
+     - /sys:/host/sys:ro
+     - /var/run/docker.sock:/var/run/docker.sock
