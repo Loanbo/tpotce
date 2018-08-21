@@ -186,11 +186,10 @@ services:
     container_name: netdata
     restart: always
     network_mode: "host"
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
     cap_add:
      - SYS_PTRACE
+    ports:
+     - "19999:19999"
     security_opt:
      - apparmor=unconfined
     image: "loanbo/netdata"
