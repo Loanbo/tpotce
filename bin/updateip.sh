@@ -20,5 +20,3 @@ MY_EXTIP=$myEXTIP
 MY_INTIP=$myLOCALIP
 MY_HOSTNAME=$HOSTNAME
 EOF
-chown tpot:tpot /data/ews/conf/ews.ip
-chmod 760 /data/ews/conf/ews.ip
