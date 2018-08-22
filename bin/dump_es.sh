@@ -1,7 +1,7 @@
 #/bin/bash
 # Dump all ES data
 # Make sure ES is available
-myES="http://127.0.0.1:64298/"
+myES="http://127.0.0.1:9200/"
 myESSTATUS=$(curl -s -XGET ''$myES'_cluster/health' | jq '.' | grep -c green)
 if ! [ "$myESSTATUS" = "1" ]
   then
@@ -21,7 +21,7 @@ trap fuCLEANUP EXIT
 # Set vars
 myDATE=$(date +%Y%m%d%H%M)
 myINDICES=$(curl -s -XGET ''$myES'_cat/indices/' | grep logstash | awk '{ print $3 }' | sort | grep -v 1970)
-myES="http://127.0.0.1:64298/"
+myES="http://127.0.0.1:9200/"
 myCOL1="[0;34m"
 myCOL0="[0;0m"
 
