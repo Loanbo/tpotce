@@ -71,7 +71,7 @@ services:
         condition: service_healthy
     ports:
      - "9100:9100"
-image: "dtagdevsec/head:1710"
+    image: "dtagdevsec/head:1710"
 
 
 # Netdata service
