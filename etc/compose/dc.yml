@@ -114,3 +114,4 @@ services:
     image: "loanbo/gateone"
     volumes:
      - /data/gateone/log/:/opt/gateone/log/
+     - /opt/tpot/etc/gateone/
