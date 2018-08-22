@@ -70,7 +70,7 @@ services:
       elasticsearch:
         condition: service_healthy
     ports:
-     - "9100:9100"
+     - "127.0.0.1:9100:9100"
     image: "dtagdevsec/head:1710"
 
 
@@ -82,7 +82,7 @@ services:
     cap_add:
      - SYS_PTRACE
     ports:
-     - "19999:19999"
+     - "127.0.0.1:19999:19999"
     security_opt:
      - apparmor=unconfined
     image: "loanbo/netdata"
