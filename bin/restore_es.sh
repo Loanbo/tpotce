@@ -1,7 +1,7 @@
 #/bin/bash
 # Restore folder based ES backup
 # Make sure ES is available
-myES="http://127.0.0.1:64298/"
+myES="http://127.0.0.1:9200/"
 myESSTATUS=$(curl -s -XGET ''$myES'_cluster/health' | jq '.' | grep -c green)
 if ! [ "$myESSTATUS" = "1" ]
   then
