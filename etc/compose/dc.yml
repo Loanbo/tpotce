@@ -1,0 +1,113 @@
+# For docker-compose ...
+version: '2.2'
+
+
+
+networks:
+  spiderfoot_local:
+  gateone_local:
+  
+  
+services:
+
+# ELK services
+## Elasticsearch service
+  elasticsearch:
+    container_name: elasticsearch
+    restart: always
+    environment:
+     - bootstrap.memory_lock=true
+     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    cap_add:
+     - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+#    mem_limit: 2g
+    ports:
+     - "127.0.0.1:9200:9200"
+    image: "dtagdevsec/elasticsearch:1710"
+    volumes:
+     - /data:/data
+
+## Kibana service
+  kibana:
+    container_name: kibana
+    restart: always
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+     - "5601:5601"
+    image: "dtagdevsec/kibana:1710"
+
+## Logstash service
+  logstash:
+    container_name: logstash
+    restart: always
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    env_file:
+     - /opt/tpot/etc/compose/elk_environment
+    image: "dtagdevsec/logstash:1710"
+    volumes:
+     - /data:/data
+     - /var/log:/data/host/log
+
+## Elasticsearch-head service
+  head:
+    container_name: head
+    restart: always
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+     - "9100:9100"
+image: "dtagdevsec/head:1710"
+
+
+# Netdata service
+  netdata:
+    container_name: netdata
+    restart: always
+    network_mode: "host"
+    cap_add:
+     - SYS_PTRACE
+    ports:
+     - "19999:19999"
+    security_opt:
+     - apparmor=unconfined
+    image: "loanbo/netdata"
+    volumes:
+     - /proc:/host/proc:ro
+     - /sys:/host/sys:ro
+     - /var/run/docker.sock:/var/run/docker.sock
+ 
+# Spiderfoot service
+  spiderfoot:
+    container_name: spiderfoot
+    restart: always
+    networks:
+     - spiderfoot_local
+    ports:
+     - "127.0.0.1:8080:8080"
+    image: "dtagdevsec/spiderfoot:1710"
+    volumes:
+     - /data/spiderfoot/spiderfoot.db:/home/spiderfoot/spiderfoot.db
+
+# Gateone service
+  gateone:
+    container_name: gateone
+    restart: always
+    networks:
+     - gateone_local
+    ports:
+     - "127.0.0.1:20443:20443"
+    image: "loanbo/gateone"
+    volumes:
+     - /data/gateone/log/:/opt/gateone/log/
