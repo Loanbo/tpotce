@@ -33,7 +33,7 @@ services:
     image: "dtagdevsec/elasticsearch:1710"
     volumes:
      - /data:/data
-
+     - /etc/localtime:/etc/localtime
 ## Kibana service
   kibana:
     container_name: kibana
@@ -44,8 +44,8 @@ services:
     ports:
      - "127.0.0.1:5601:5601"
     image: "dtagdevsec/kibana:1710"
-
-
+    volumes:
+     - /etc/localtime:/etc/localtime
 ## Elasticsearch-head service
   head:
     container_name: head
@@ -56,7 +56,8 @@ services:
     ports:
      - "127.0.0.1:9100:9100"
     image: "dtagdevsec/head:1710"
-
+    volumes:
+     - /etc/localtime:/etc/localtime
 
 # Netdata service
   netdata:
@@ -74,7 +75,7 @@ services:
      - /proc:/host/proc:ro
      - /sys:/host/sys:ro
      - /var/run/docker.sock:/var/run/docker.sock
- 
+     - /etc/localtime:/etc/localtime
 # Spiderfoot service
   spiderfoot:
     container_name: spiderfoot
@@ -86,6 +87,7 @@ services:
     image: "dtagdevsec/spiderfoot:1710"
     volumes:
      - /data/spiderfoot/spiderfoot.db:/home/spiderfoot/spiderfoot.db
+     - /etc/localtime:/etc/localtime
 
 # Gateone service
   gateone:
@@ -99,3 +101,4 @@ services:
     volumes:
      - /data/gateone/log/:/opt/gateone/log/
      - /opt/tpot/etc/gateone/server.conf:/opt/gateone/server.conf
+     - /etc/localtime:/etc/localtime
