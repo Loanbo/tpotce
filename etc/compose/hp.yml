@@ -165,6 +165,7 @@ services:
     image: "dtagdevsec/conpot:1710"
     volumes:
      - /data/conpot/log:/var/log/conpot
+     - /etc/localtime:/etc/localtime
   
  # Emobility service
   emobility:
@@ -180,6 +181,7 @@ services:
     volumes:
      - /data/emobility:/data/eMobility
      - /data/ews:/data/ews
+     - /etc/localtime:/etc/localtime
 
 # Netdata service
   netdata:
@@ -197,3 +199,4 @@ services:
      - /proc:/host/proc:ro
      - /sys:/host/sys:ro
      - /var/run/docker.sock:/var/run/docker.sock
+     - /etc/localtime:/etc/localtime
