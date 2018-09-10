@@ -6,7 +6,7 @@ version: '2.2'
 networks:
   spiderfoot_local:
   gateone_local:
-  
+  elk_local:
   
 services:
 
@@ -45,23 +45,7 @@ services:
      - "127.0.0.1:5601:5601"
     image: "dtagdevsec/kibana:1710"
 
-## Logstash service
-  logstash:
-    container_name: logstash
-    restart: always
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    env_file:
-     - /opt/tpot/etc/compose/elk_environment
-    ports:
-     - "3520:3520"
-    image: "dtagdevsec/logstash:1710"
-    volumes:
-     - /data:/data
-     - /var/log:/data/host/log
-     - /opt/tpot/etc/logstash/logstash.conf:/etc/logstash/conf.d/logstash.conf
-     
+
 ## Elasticsearch-head service
   head:
     container_name: head
